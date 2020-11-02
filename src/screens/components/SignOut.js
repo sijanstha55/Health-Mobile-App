@@ -1,38 +1,19 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState, Component } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import { Image, Text,RefreshControl, TextInput, TouchableOpacity, View ,Dimensions, AsyncStorage} from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { LoginScreen, HomeScreen, RegistrationScreen } from './src/screens'
+import { LoginScreen, HomeScreen, RegistrationScreen } from '../src/screens'
 import {decode, encode} from 'base-64'
-
-
 import { firebase } from './src/firebase/config'
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
 const Stack = createStackNavigator();
 
-
-export default function App() {
+export default function SignOut()  {
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
-  const [fullName, setFullname] = useState('')
-  const [signedIn,setSignedIn]= useState()
- 
-  
-
-  async function onSignOut(){
-    await firebase.auth().signOut();
-    setUser(null)
-    setSignedIn(false)
-    
-    
-   
-    
-    
-  }
   
   useEffect(() => {
     const usersRef = firebase.firestore().collection('users');
@@ -44,10 +25,7 @@ export default function App() {
           .then((document) => {
             const userData = document.data()
             setLoading(false)
-            setUser(userData)
-            setFullname(userData.fullName)
-            setSignedIn(true)
-            
+            setUser(null)
           })
           .catch((error) => {
             setLoading(false)
@@ -65,37 +43,24 @@ export default function App() {
   
 }
   return (
-   
     <NavigationContainer>
-      
       <Stack.Navigator>
         { user ? (
-          
-            
           <Stack.Screen  name="Home"
           component={HomeScreen}
           options={{
-            title: 'Hello, '+fullName,
-            headerRight : () => (
-              <TouchableOpacity
-             
-              onPress={() => onSignOut()}>
-              <Text>Sign Out</Text>
-          </TouchableOpacity>
-            ),
-            headerShown: true,
+            title: 'My home',
+            headerShown: false ,
             headerStyle: {
-              backgroundColor: '#fff',
+              backgroundColor: '#136Df3',
             },
-            
+            headerTintColor: '#fff',
             headerTitleStyle: {
               fontWeight: 'bold',
             },
           }}>
             
         </Stack.Screen>
-        
-        
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
@@ -103,8 +68,6 @@ export default function App() {
           </>
         )}
       </Stack.Navigator>
-      
     </NavigationContainer>
-   
   );
 }
