@@ -3,9 +3,9 @@ import React, { useEffect, useState, Component } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { Image, Text,RefreshControl, TextInput, TouchableOpacity, View ,Dimensions, AsyncStorage} from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { LoginScreen, HomeScreen, RegistrationScreen } from './src/screens'
+import { LoginScreen, HomeScreen, RegistrationScreen, MyTabs } from './src/screens'
 import {decode, encode} from 'base-64'
-
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
 import { firebase } from './src/firebase/config'
 if (!global.btoa) {  global.btoa = encode }
@@ -25,6 +25,7 @@ export default function App() {
 
   async function onSignOut(){
     await firebase.auth().signOut();
+   
     setUser(null)
     setSignedIn(false)
     
@@ -80,7 +81,7 @@ export default function App() {
               <TouchableOpacity
              
               onPress={() => onSignOut()}>
-              <Text>Sign Out</Text>
+              <FontAwesome name="sign-out" size={24} color="black" />
           </TouchableOpacity>
             ),
             headerShown: true,

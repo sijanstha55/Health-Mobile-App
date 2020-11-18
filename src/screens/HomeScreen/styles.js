@@ -1,3 +1,4 @@
+import { blue } from '@material-ui/core/colors';
 import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
 export default StyleSheet.create({
@@ -37,7 +38,10 @@ export default StyleSheet.create({
    // borderTopLeftRadius: 60,
     
    flexDirection:'column',
-   margin: 10
+   margin: 10,
+   height:200,
+   borderBottomLeftRadius:12,
+   borderBottomRightRadius:12
 },
   top:{
        backgroundColor: '#ecb879',
@@ -47,7 +51,7 @@ export default StyleSheet.create({
     height: 48,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 30,
@@ -65,6 +69,7 @@ button: {
     justifyContent: 'center',
     
 },
+
 buttonTitle: {
     color: 'white',
     fontSize: 16,

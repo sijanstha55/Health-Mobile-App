@@ -15,24 +15,43 @@ export default function initialData({navigation}) {
     const [heightin, setHeightIn] = useState('')
     const [weightM, setWeightM] = useState('lbs');
     const [activitylevel, setActivityLevel] = useState('');
+    
 
     const onUpdateProfile=()=>{
-        
-        var heightM=(heightft * 0.3048)+(heightin * 0.0254)
-       
-        
-        var user = firebase.auth().currentUser;
+        if(weightM=="kg"){
+            var realWeight= weight * 2.21
+            var realGoalWeight = goalWeight * 2.21
+        }
+        else{
+            var realWeight= weight 
+           var realGoalWeight = goalWeight
+        }
+        var heightIn=(heightft * 12)+ heightin
+        if(sex=="1"){ //For female
+            var BMR = 655 + (4.35 * realWeight) +(4.7 * heightIn) - (4.7 * age)
+            var TEE = BMR * parseFloat(activitylevel)
+            
+
+        }
+        else if(sex=="2"){ //For male
+            var BMR = 66 + (6.2 * realWeight) +(12.7 * heightIn) - (6.76 * age)
+            var TEE = BMR * parseFloat(activitylevel)
+        }
+        var use="yy";
+                var user = firebase.auth().currentUser;
         let usid=user.uid;
         firebase.firestore().collection('users').doc(usid).set({
             
             age: age,
-            
-            weight: weight,
-            goalWeight: goalWeight,
+            BMR: BMR,
+            TEE: TEE,
+            weight: realWeight,
+            goalWeight: realGoalWeight,
             sex: sex,
             heightFt: heightft,
             heightIn:heightin,
             activitylevel: activitylevel,
+          
             data: true
         }, { merge: true })
             
@@ -91,20 +110,24 @@ export default function initialData({navigation}) {
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
                 />
-                <TextInput
-                    style={styles.input}
-                    placeholder='Sex'
-                    placeholderTextColor="#aaaaaa"
-                    onChangeText={(text) => setSex(text)}
-                    value={sex}
-                    underlineColorAndroid="transparent"
-                    autoCapitalize="none"
-                />
+                  <View style={styles.height}>
+                    <View>
+                <Text style={{marginLeft:30,marginTop:10, height:40}}>Sex</Text></View>
+                <View style={{marginLeft:50}}>
+                <Picker
+                     selectedValue={sex}
+                     style={{ height: 40, width: 150 }}
+                     onValueChange={(itemValue, itemIndex) => setSex(itemValue)}
+                     >
+                     <Picker.Item label="Female" value='1' />
+                      <Picker.Item label="Male" value='2' />
+                      
+                </Picker></View></View>
                 <View style={styles.height}>
                 <TextInput
                     style={styles.input}
                     placeholderTextColor="#aaaaaa"
-                    
+                    keyboardType='number-pad'
                     placeholder='Height in feet'
                     onChangeText={(text) => setHeightFt(parseInt(text))}
                     value={heightft}
@@ -133,10 +156,10 @@ export default function initialData({navigation}) {
                      style={{ height: 40, width: 150 }}
                      onValueChange={(itemValue, itemIndex) => setActivityLevel(itemValue)}
                      >
-                     <Picker.Item label="Sedentary" value='1' />
-                      <Picker.Item label="Moderate" value='2' />
-                      <Picker.Item label="Active" value='3' />
-                      <Picker.Item label="Very Active" value='4' />
+                     <Picker.Item label="Sedentary" value='1.50' />
+                      <Picker.Item label="Moderate" value='1.80' />
+                      <Picker.Item label="Active" value='2.10' />
+                      <Picker.Item label="Very Active" value='2.40' />
                 </Picker></View></View>
                 <TouchableOpacity
                     style={styles.button}

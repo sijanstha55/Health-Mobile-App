@@ -27,7 +27,19 @@ export default StyleSheet.create({
       flex: 1,
       alignItems: 'center'
   },
+  goals:{
+    
+    backgroundColor: '#ecb879',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 10,
+    height: 55,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: 'center',
+    
 
+},
    input: {
     height: 48,
     borderRadius: 5,
