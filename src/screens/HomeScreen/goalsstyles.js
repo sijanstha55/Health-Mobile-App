@@ -1,3 +1,5 @@
+//Stylesheet for goal section
+
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
@@ -16,7 +18,7 @@ export default StyleSheet.create({
       margin:10
   },
   customgoals:{
-    height: 70,
+   
     backgroundColor:'lightblue',
     margin:10,
     justifyContent:'center'

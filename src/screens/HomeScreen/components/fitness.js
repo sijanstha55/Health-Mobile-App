@@ -1,3 +1,6 @@
+/* This section is for exercise section. Here user can add calorie burned, walking and running */
+
+
 import { HeaderBackground } from '@react-navigation/stack';
 import React, { useState, Component,useEffect } from 'react'
 import { Image, Text, TextInput,Picker, TouchableOpacity, View ,Dimensions,Button} from 'react-native'
@@ -42,8 +45,14 @@ const handleDelete = () => {
   setWalkVisible(false);
   setRunVisible(false);
 };
+
+//Adding calorie burned ammount
 const AddCalorieBurned = () => {
-  
+  if(calorieBurned===''){
+    alert('Enter valid amount')
+
+  }
+  else{
   var user = firebase.auth().currentUser;
     let usid=user.uid;
     var d = new Date();
@@ -74,8 +83,16 @@ const AddCalorieBurned = () => {
         });
         }
       })
-};
+      setCalorieBurned('');
+}};
+
+
+//Adding walking amount and calorie burned
 const  AddWalk = ()=>{
+  if(duration===''){
+    alert('Please add the duration')
+  }
+  else{
   var calorieBurn = parseFloat(met) * (weight/2.21) * (parseInt(duration)/60);
  var wal=0;
   if(walkmet=="3"){
@@ -127,9 +144,17 @@ wal = wal.toFixed(2);
         }
       })
       setWalkVisible(false);
+setDuration('');
+}}
 
-}
+//Adding running and calorie burned
 const  AddRun = ()=>{
+  if(duration===''){
+    alert('Please add the duration')
+  }
+  else{
+
+  
   var calorieBurn = parseFloat(met) * (weight/2.21) * (parseInt(duration)/60);
  const Met = [7,6,8.3,9,9.8,10.5,11,11.8,11.8,12.3,12.8,14.5,16,19,19.8,23]
  const speed = [2,4,5,5.2,6,6.7,7,7.5,8,8.6,9,10,11,12,13,14]
@@ -137,7 +162,7 @@ const  AddRun = ()=>{
  ran = ran.toFixed(2) + run;
 setRun(ran)
 
-  
+
   var user = firebase.auth().currentUser;
     let usid=user.uid;
     var d = new Date();
@@ -172,7 +197,8 @@ setRun(ran)
         }
       })
       setRunVisible(false);
-}
+      setDuration('');
+}}
 useEffect(() => {
   var user = firebase.auth().currentUser;
     let usid=user.uid;
@@ -235,7 +261,7 @@ if (loading) {
                     placeholder='Calories Burned'
                     keyboardType='number-pad'
                     placeholderTextColor="#aaaaaa"
-                    onChangeText={(text) => setCalorieBurned(text)}
+                    onChangeText={(text) => setCalorieBurned(parseInt(text))}
                     value={calorieBurned}
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"

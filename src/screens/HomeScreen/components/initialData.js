@@ -1,3 +1,5 @@
+// This section is for entering the initial data after user registered the account
+
 import React, { useState } from 'react'
 import { Image, Text, Picker, TextInput, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -10,14 +12,19 @@ export default function initialData({navigation}) {
     const [age, setAge] = useState('')
     const [weight, setWeight] = useState('')
     const [goalWeight, setGoalWeight] = useState('')
-    const [sex, setSex] = useState('')
+    const [sex, setSex] = useState('1')
     const [heightft, setHeightFt] = useState('')
     const [heightin, setHeightIn] = useState('')
     const [weightM, setWeightM] = useState('lbs');
-    const [activitylevel, setActivityLevel] = useState('');
-    
+    const [activitylevel, setActivityLevel] = useState('1.5');
+   
+    //Function to update profile with new data
 
     const onUpdateProfile=()=>{
+        if(age===''||weight===''||goalWeight==='' ||heightft===''||heightin===''){
+            alert('Please do not leave any field empty');
+        }
+        else{
         if(weightM=="kg"){
             var realWeight= weight * 2.21
             var realGoalWeight = goalWeight * 2.21
@@ -40,6 +47,9 @@ export default function initialData({navigation}) {
         var use="yy";
                 var user = firebase.auth().currentUser;
         let usid=user.uid;
+
+
+        //setting the value in database based on user's entry
         firebase.firestore().collection('users').doc(usid).set({
             
             age: age,
@@ -51,6 +61,9 @@ export default function initialData({navigation}) {
             heightFt: heightft,
             heightIn:heightin,
             activitylevel: activitylevel,
+            dailyNetCalorieGoal:0,
+            dailyCalorieGoal:0,
+            dailyCalorieBurnedGoal:0,
           
             data: true
         }, { merge: true })
@@ -59,8 +72,8 @@ export default function initialData({navigation}) {
             .catch((error) => {
                 alert(error)
         });
-        navigation.navigate('Goals');
-    }
+        navigation.navigate('MyTabs');
+    }}
 
   
     return (
@@ -73,6 +86,7 @@ export default function initialData({navigation}) {
                 <TextInput
                     style={styles.input}
                     placeholder='Age'
+                    keyboardType='number-pad'
                     required
                     placeholderTextColor="#aaaaaa"
                     onChangeText={(text) => setAge(parseInt(text))}
@@ -85,6 +99,7 @@ export default function initialData({navigation}) {
                 <TextInput
                     style={styles.input}
                     placeholder='Weight'
+                    keyboardType='number-pad'
                     placeholderTextColor="#aaaaaa"
                     onChangeText={(text) => setWeight(parseInt(text))}
                     value={weight}
@@ -103,6 +118,7 @@ export default function initialData({navigation}) {
                 </View>
                 <TextInput
                     style={styles.input}
+                    keyboardType='number-pad'
                     placeholder='Goal Weight'
                     placeholderTextColor="#aaaaaa"
                     onChangeText={(text) => setGoalWeight(parseInt(text))}
@@ -139,6 +155,7 @@ export default function initialData({navigation}) {
                     placeholderTextColor="#aaaaaa"
                     
                     placeholder='in inch '
+                    keyboardType='number-pad'
                     onChangeText={(text) => setHeightIn(parseInt(text))}
                     value={heightin}
                     underlineColorAndroid="transparent"

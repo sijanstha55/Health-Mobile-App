@@ -1,4 +1,4 @@
-
+//This section is for weight. This component is called in Homescreen. Here user update their weight
 
 import React, { useState, Component,useEffect } from 'react';
 import Dialog from 'react-native-dialog';
@@ -32,6 +32,8 @@ export default class Weight extends Component{
         };
       
       }
+
+      //Getting upto date weights
       getWeights= async () =>{
         var user = firebase.auth().currentUser
        
@@ -67,6 +69,9 @@ export default class Weight extends Component{
        handleCancel = () => {
         this.setState({weightInput:false});
       };
+
+      //Function to update weight in the database.
+      
        UpdateWeight =async()=>{
            if(this.state.weight==0){
                 alert("Please select valid weight")
@@ -147,7 +152,7 @@ return(
    
     <Dialog.Input
                 style={fitnessstyles.input}
-                placeholder='Weight'
+                placeholder='Weight in lbs'
                 keyboardType='number-pad'
                 placeholderTextColor="#aaaaaa"
                 onChangeText={(text) => this.setState({weight: parseInt(text)})}

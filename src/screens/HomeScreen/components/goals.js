@@ -1,9 +1,12 @@
-
+/*
+This contains the code for goals part. Here app deals with showing the goals and user can set the goals.
+*/
 import { firestore } from 'firebase';
 import React, { useState, Component,useEffect } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View ,Dimensions} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import goalsstyles from '../goalsstyles';
+import styles from '../styles';
 import { firebase } from '../../../firebase/config';
 import { render } from 'react-dom';
 export default function Goals({navigation}){
@@ -11,32 +14,79 @@ export default function Goals({navigation}){
     const [goalWeight,setGoalWeight]=useState(0);
     const [goal, setGoal]=useState('');
     const [week, setWeek] = useState(0);
-    const [caloriegoal, setCaloriegoal]=useState(0);
+    const [dailyCalorieGoal, setDailyCalorieGoal]=useState('');
+    const [dailyNetCalorieGoal, setDailyNetCalorieGoal]=useState(0);
+    const [dailyCalorieBurnedGoal, setDailyCalorieBurnedGoal]=useState('');
     const [TEE, setTEE]=useState(0);
-    
+
+    //for setting daily calorie goal
+    const onSetDailyCalorieGoal=()=>{
+      if(dailyCalorieGoal==''){
+        alert('Please enter the goal amount')
+      }
+      else{
+        var user = firebase.auth().currentUser;
+        let usid=user.uid;
+        firebase.firestore().collection('users').doc(usid).set({
+            
+            dailyCalorieGoal: dailyCalorieGoal
+        }, { merge: true })
+            
+            
+            .catch((error) => {
+                alert(error)
+        });
+        alert('Goal Added');
+      }
+setDailyCalorieGoal('');
+    }
+
+    //for setting daily calorie burned goal
+    const onSetDailyCalorieBurnedGoal=()=>{
+      if(dailyCalorieBurnedGoal==''){
+        alert('Please enter the goal amount')
+      }
+      else{
+        var user = firebase.auth().currentUser;
+        let usid=user.uid;
+        firebase.firestore().collection('users').doc(usid).set({
+            
+            dailyCalorieBurnedGoal: dailyCalorieBurnedGoal
+        }, { merge: true })
+            
+            
+            .catch((error) => {
+                alert(error)
+        });
+      }
+      setDailyCalorieBurnedGoal('');
+      alert('Goal Added');
+      
+    }
+
+    //for setting daily net calorie goal
    const  onSetNetCalorieGoal=(cal)=>{
      if(goal=='lose'){
      var call= TEE - (cal * 500)
-      setCaloriegoal(call)
+    
       
-       // navigation.navigate('MyTabs');
       }
       else{
        var call= TEE + (cal * 500)
-        setCaloriegoal(call);
+       
       }
       var user = firebase.auth().currentUser;
       let usid=user.uid;
       firebase.firestore().collection('users').doc(usid).set({
           
-          dailyCalorieGoal: call
+          dailyNetCalorieGoal: call
       }, { merge: true })
           
           
           .catch((error) => {
               alert(error)
       });
-     navigation.navigate('MyTabs')
+    alert('Goal Added');
     }
      
     useEffect(()=> {
@@ -82,7 +132,7 @@ export default function Goals({navigation}){
         
          <KeyboardAwareScrollView>
        
-      <View>
+  
            {((weight - goalWeight) >= 0.5 || (weight - goalWeight) <= -0.5) &&   
            
         <TouchableOpacity
@@ -125,14 +175,46 @@ export default function Goals({navigation}){
         <Text style={{textAlign:'center',marginTop:10}}>Daily Net Calorie Goal: {TEE - 1000}</Text>
            </TouchableOpacity> 
 }  
-<TouchableOpacity
+<View
         style={goalsstyles.customgoals}
-        onPress={() => onSetNetCalorieGoal(2)}
+        onPress={() => onSetNetCalorieGoal}
         >
         <Text style={goalsstyles.goalsTitle}>Custom Goals</Text>
+        <TextInput
+                    style={styles.input}
+                    placeholder='Daily Calorie In Goal'
+                    keyboardType='number-pad'
+                    required
+                    placeholderTextColor="#aaaaaa"
+                    onChangeText={(text) => setDailyCalorieGoal(parseInt(text))}
+                    value={dailyCalorieGoal}
+                    underlineColorAndroid="transparent"
+                    autoCapitalize="none"
+                />
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => onSetDailyCalorieGoal()}>
+                    <Text style={styles.buttonTitle}>Set Daily Calorie Goal</Text>
+                </TouchableOpacity>
+                 <TextInput
+                    style={styles.input}
+                    keyboardType='number-pad'
+                    placeholder='Daily Calorie In Goal'
+                    required
+                    placeholderTextColor="#aaaaaa"
+                    onChangeText={(text) => setDailyCalorieBurnedGoal(parseInt(text))}
+                    value={dailyCalorieBurnedGoal}
+                    underlineColorAndroid="transparent"
+                    autoCapitalize="none"
+                />
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => onSetDailyCalorieBurnedGoal()}>
+                    <Text style={styles.buttonTitle}>Add Calorie Burned Goal</Text>
+                </TouchableOpacity>
         
-           </TouchableOpacity> 
-      </View>
+           </View> 
+      
         
       </KeyboardAwareScrollView> 
 

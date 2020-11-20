@@ -1,3 +1,7 @@
+/*
+This section contains the screen part that user see after they login or after they entered the initial data after registration.
+The navigation part also is the part of this file which is att the bottom.
+*/
 
 import { firestore } from 'firebase';
 import React, { useState, Component,useEffect } from 'react';
@@ -19,10 +23,11 @@ import initialData from './components/initialData';
 import fitness from './components/fitness';
 import profile from './components/profile';
 import Goals from './components/goals';
+import Weight from './components/weight'
 import CalendarPicker from 'react-native-calendar-picker';
 import { BarChart} from "react-native-chart-kit";
 
-
+//This is homescreen component which contains the information about how homescreen should look
 class HomeScreen extends Component {
   
   constructor(props){
@@ -40,14 +45,17 @@ class HomeScreen extends Component {
       BMI:0,
       date: new Date(),
      show: false,
-      percent: 0
+      percent: 0,
+      dailyNetCalorieGoal:0,
+      dialyCalorieGoal:0,
+      dailyCalorieBurnedGoal:0,
       
       
 
     };
   
   }
- 
+ //Function That will view data based on date selected
   onChange = (event, selectedDate) => {
     const currentDate = selectedDate || this.state.date;
     
@@ -61,10 +69,7 @@ class HomeScreen extends Component {
         {
           let usid=user.uid;
           
-         firebase.firestore().collection('users').doc(user.uid).onSnapshot(doc =>{
-           this.setState({BMI: doc.data().BMI})
-   
-         })
+         
          firebase.firestore().collection('users').doc(usid).collection('dailyRecord').doc(d.toString()).onSnapshot(doc => {
            
            
@@ -109,7 +114,7 @@ class HomeScreen extends Component {
     
    
   };
-
+//this will show date picker form
    showDatepicker=()=>{
     this.setState({show:true});
   };
@@ -129,12 +134,22 @@ class HomeScreen extends Component {
     if(user)
      {
        let usid=user.uid;
-       
+       //This will get goals values from database
       firebase.firestore().collection('users').doc(user.uid).onSnapshot(doc =>{
-        this.setState({BMI: doc.data().BMI})
+        if(doc.data().dailyCalorieGoal>0){
+          this.setState({dailyCalorieGoal: doc.data().dailyCalorieGoal});
+        }
+        if(doc.data().dailyCalorieBurnedGoal>0){
+         this.setState({dailyCalorieBurnedGoal: doc.data().dailyCalorieBurnedGoal});
+       }
+       if(doc.data().dailyNetCalorieGoal>0){
+         this.setState({dailyNetCalorieGoal: doc.data().dailyNetCalorieGoal});
+       }
         dailyCalorie = doc.data().dailyCalorieGoal
 
       })
+
+      //this will get data like total calorie in and burned for the day and also goals values
       firebase.firestore().collection('users').doc(usid).collection('dailyRecord').doc(d.toString()).onSnapshot(doc => {
         
         
@@ -198,24 +213,7 @@ class HomeScreen extends Component {
   
   render(){
     
-    const data = {
-      labels: ["January", "February", "March", "April", "May", "June","july","Aug"],
-      datasets: [
-        {
-          data: [45, 45, 67, 80, 99, 43,70,50]
-        }
-      ]
-    };
-    const chartConfig = {
-      backgroundGradientFrom: "rgb(255, 179, 217)",
-      backgroundGradientFromOpacity: 0.5,
-      backgroundGradientTo: "#3385ff",
-      backgroundGradientToOpacity: 1,
-      color: (opacity = 100) => `rgba(0, 0, 153, ${opacity})`,
-      strokeWidth: 5, 
-      barPercentage: 0.5,
-      useShadowColorFromDataset: false 
-    };
+   
 
     const { selectedStartDate } = this.state;
     const startDate = selectedStartDate ? selectedStartDate.toString() : '';
@@ -254,55 +252,82 @@ class HomeScreen extends Component {
     <View style={{backgroundColor: '#fff', flexDirection: 'row', height: 80, borderBottomLeftRadius:12, borderBottomRightRadius: 12, marginLeft: 5,marginRight:5, alignItems:'center'}}>
 <Text style={{flex:1, textAlign: 'center',fontSize: 34, color: '#2a8000', fontWeight:'bold'}}>{this.state.calorie}</Text>
 <Text style={{flex:1, textAlign: 'center',fontSize: 34, color:'#ff6666'}}>{this.state.calorieBurned}</Text>
-<Text style={{flex:1, textAlign: 'center',fontSize: 34}}>{this.state.net}</Text></View>
+<Text style={{flex:1, textAlign: 'center',fontSize: 34}}>{this.state.calorie - this.state.calorieBurned}</Text></View>
 </View> 
 </View>
-<View style={{backgroundColor: '#0d74a1',height: 40, justifyContent: 'center', alignItems: 'center',marginLeft: 10,marginRight:10}}><Text>Weight</Text></View>
-<ScrollView horizontal={true}>
-<BarChart
-  style={{marginLeft:10,marginRight:10}}
- 
-  data={data}
-  width={Dimensions.get("window").width-20}
-  height={250}
-  yAxisSuffix="lbs"
-  showValuesOnTopOfBars={true}
-  chartConfig={chartConfig}
-  verticalLabelRotation={30}
-/></ScrollView>
-<View style={{backgroundColor: '#fff', flexDirection: 'row', height: 100, borderBottomRightRadius: 12,borderBottomLeftRadius:12, marginLeft: 10,marginRight:10, alignItems:'center'}}>
-<Text style={{flex:1,textAlign: 'center',fontSize: 34, color: '#2a8000'}}>89</Text>
-<Text style={{flex:1, textAlign: 'center',fontSize: 34, color:'#ff6666'}}>86</Text>
-<Text style={{flex:1, textAlign: 'center',fontSize: 34}}>Loss</Text></View>
+
+<Weight />
+
 
  
   
         <View style={styles.containerone}>
         <View style={{flex: 0.5,backgroundColor: '#3d5875',height: 40, justifyContent: 'center', alignItems: 'center'}}><Text>Goals</Text></View>
-          <View style={styles.box1}>
-            <View style={styles.one}>
-          <Text style={styles.subtitle}>Daily Calorie Goal: </Text></View>
+        {(this.state.dailyNetCalorieGoal > 0) && ( <View style={styles.box1}>
+          
+        <View style={styles.one}>
+          <Text style={styles.subtitle}>Daily Net Calorie Goal: </Text></View>
           <View style={styles.two}>
           <AnimatedCircularProgress
             size={100}
             width={5}
-            fill={this.state.percent}
+            fill={(((this.state.calorie - this.state.calorieBurned)/this.state.dailyNetCalorieGoal)*100)}
             tintColor="#00e0ff"
              backgroundColor="#3d5875">
             {
            (fill) => (
-            <Text style={styles.name}> {this.state.percent} %</Text>
+            <Text style={styles.name}> {(((this.state.calorie - this.state.calorieBurned)/this.state.dailyNetCalorieGoal)*100).toFixed(1)} %</Text>
               )
               }</AnimatedCircularProgress>
             
             </View>
           </View>
-         
-           
+    )}
+       {(this.state.dailyCalorieGoal > 0) && ( <View style={styles.box1}>
+          
+          <View style={styles.one}>
+            <Text style={styles.subtitle}>Daily Calorie Goal: {this.state.dailyCalorieGoal}</Text></View>
+            <View style={styles.two}>
+            <AnimatedCircularProgress
+              size={100}
+              width={5}
+              fill={(this.state.calorie/this.state.dailyCalorieGoal)*100}
+              tintColor="#00e0ff"
+               backgroundColor="#3d5875">
+              {
+             (fill) => (
+              <Text style={styles.name}> {((this.state.calorie/this.state.dailyCalorieGoal)*100).toFixed(1)} %</Text>
+                )
+                }</AnimatedCircularProgress>
+              
+              </View>
+            </View>
+      )}
+         {(this.state.dailyCalorieBurnedGoal > 0) && ( <View style={styles.box1}>
+          
+          <View style={styles.one}>
+            <Text style={styles.subtitle}>Daily Calorie Burned Goal: </Text></View>
+            <View style={styles.two}>
+            <AnimatedCircularProgress
+              size={100}
+              width={5}
+              fill={(this.state.calorieBurned/this.state.dailyCalorieBurnedGoal)*100}
+              tintColor="#00e0ff"
+               backgroundColor="#3d5875">
+              {
+             (fill) => (
+              <Text style={styles.name}> {((this.state.calorieBurned/this.state.dailyCalorieBurnedGoal)*100).toFixed(1)} %</Text>
+                )
+                }</AnimatedCircularProgress>
+              
+              </View>
+            </View>
+      )}
+            
            
         
        
-              
+
         </View>
      </View>  
      </KeyboardAwareScrollView>
@@ -311,7 +336,10 @@ class HomeScreen extends Component {
 
 }
 }
+/*
+This contains code for navigation tab at the bottom of the screen.
 
+*/
 
 const Tab = createBottomTabNavigator();
 
@@ -362,7 +390,7 @@ class MyTabs extends Component {
   render(){
     
   return (
-    
+    //Navigator ..the initial screen is Homescreen
     <Tab.Navigator
       initialRouteName="HomeScreen"
       name="Home"
@@ -414,7 +442,7 @@ class MyTabs extends Component {
         name="Profile"
         component={profile}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Goals',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user" size={size} color={color} />
           ),
@@ -426,6 +454,8 @@ class MyTabs extends Component {
 }}
 const Stack = createStackNavigator();
 
+/* This is for the main homescree. Here the app deal with which screen to show based on at if user has completed registerd
+for account or not */
 export default function Home({navigation}){
 
   const [data, setData] =useState(false)
@@ -460,7 +490,7 @@ export default function Home({navigation}){
   
 }
   return (
-   
+   //Shows different screens based on whether the use has filled the initial data or not.
       
       <Stack.Navigator>
         {data ? (
@@ -469,7 +499,7 @@ export default function Home({navigation}){
           <>
           <Stack.Screen name="initialData" component={initialData} />
           <Stack.Screen name="MyTabs" component={MyTabs} />
-          <Stack.Screen name="Goals" component={Goals} />
+         
           </>
         )}
       
