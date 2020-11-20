@@ -47,7 +47,12 @@ export default function initialData({navigation}) {
         var use="yy";
                 var user = firebase.auth().currentUser;
         let usid=user.uid;
-
+        var date=new Date();
+        date.setHours(0,0,0,0);
+        firebase.firestore().collection('users').doc(usid).collection('weight').doc(date.toString()).set({
+            weight: realWeight,
+            timestamp: date
+        })
 
         //setting the value in database based on user's entry
         firebase.firestore().collection('users').doc(usid).set({
