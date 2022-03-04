@@ -21,4 +21,5 @@ Would you like to upload a keystore or have us generate one for you? > Generate 
 This will develop an android application (.apk) that you can install in android phones by downloading from the given URL.
 User can install the app by opening the .apk file.
 To uninstall the app, the user will need click the app for long time which will show the option of uninstall by clicking which the user can uninstall the app.
-The app is hosted in expo account of the user that was used during build process.
+The app is hosted in expo account of the user that was used during build process. <br /><br />
+See More at: [Health Mobile App User's Manual.pdf](https://github.com/sijanstha55/Health-Mobile-App/files/8187093/Health.Mobile.App.User.s.Manual.pdf)
